@@ -10,9 +10,11 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
     <style>
         .bb {
             padding-top: 10px;
@@ -33,9 +35,10 @@
             font-size: 17.5px;
         }
 
-
         .add {
-            padding-left: 10px;
+            padding-left: 20px;
+            margin-top: -45px;
+            margin-left: 416px;
         }
 
         * {
@@ -147,8 +150,9 @@
                 <div class="input">
                     <form id="add_task">
                         @csrf
-                        <input type="text" name="task" class="form-control" placeholder="Project # To Do"
-                            name="" />
+                        <input type="hidden" id="id" name="id" />
+                        <input id="task" type="text" name="task" class="form-control"
+                            placeholder="Project # To Do" name="" />
                         <div class="add">
                             <button name="submit" type="submit" class="btn btn-success">Add</button>
                         </div>
@@ -157,25 +161,82 @@
 
                 <br>
                 <br>
-
-                <ul id="task_list" class="todo-list">
-                    @foreach ($todos as $todo)
-                        <li id="{{ $todo->id }}">
-                            <a href="#" class="toggle"></a>
-                            <a href="#" onclick="task_done('{{ $todo->id }}')" class="icon-done">Done</a>
-                            <span id="span_{{ $todo->id }}">{{ $todo->title }}</span>
-                            <a href="#" onclick="edit_task('{{ $todo->id }}','{{ $todo->title }}')"
-                                class="icon-edit">Edit</a>
-                            <a href="#" onclick="delete_task('{{ $todo->id }}')"
-                                class="icon-delete">Delete</a>
+                @foreach ($todo as $value)
+                    <ul class="todo-list" id="sid{{ $value->id }}">
+                        <li><input type="checkbox" name="ids" class="checkBoxClass" value="{{ $value->task }}" />
+                            {{ $value->task }}
+                            <a href="javascript:void(0)" onclick="delete({{ $value->id }})"><span
+                                    class="material-symbols-outlined">
+                                    delete</span></a>
                         </li>
-                    @endforeach
-                </ul>
+                    </ul>
+                @endforeach
             </div>
         </div>
     </div>
 
+    <script>
+        $(document).ready(function() {
+            $("#add_task").submit(function(e) {
+                e.preventDefault();
+                // let task = $("#task").val();
+                $.ajax({
+                    url: "{{ url('add') }}",
+                    type: "POST",
+                    data: $('#add_task').serialize(),
+                    success: function(response) {
+                        if (response) {
+                            $(".todo-list").prepend('<ul><li>' + response.task +
+                                '</li></ul>'
+                            );
+                            $("#add_task")[0].reset();
+                        }
+                    }
 
+
+                });
+            });
+        });
+    </script>
+    <script>
+        function getid(id) {
+            $.get('task/' + id, function(task) {
+                $("#id").val(task.id);
+            });
+        }
+
+        function delete(id) {
+            if (confirm("Do you really want to delete ?")) {
+                $.ajax({
+                    url: 'task/' + id,
+                    type: 'DELETE',
+                    data: {
+                        _token: $("input[name=_token]").val()
+                    },
+                    success: function(response) {
+                        $("#sid" + id).remove();
+                    }
+
+                });
+            }
+        }
+    </script>
+    {{-- <script>
+        $(function(e) {
+            $("#check1").click(function() {
+                $(".checkBoxClass").prop('checked', $(this).prop('checked'));
+            });
+        });
+    </script> --}}
+    <script>
+        $(function(e) {
+            $("#check1").click(function() {
+                $('input[name="ids"]:checked').each(function() {
+                    alert('Task  :  ' + this.value + '  is completed');
+                });
+            });
+        });
+    </script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

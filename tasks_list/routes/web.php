@@ -14,9 +14,8 @@ use App\Http\Controllers\AddTaskController;
 |
 */
 
-Route::get('', [AddTaskController::class, 'index']); 
+Route::get('', [AddTaskController::class, 'index']);
+Route::post('list', [AddTaskController::class, 'create']);
+Route::post('delete', [AddTaskController::class, 'delete']);
+Route::post('update', [AddTaskController::class, 'update']);
 
-Route::post('add_task', [AddTaskController::class, 'addtask']); 
-Route::get('fetch', [AddTaskController::class, 'fetch_tasks']); 
-
-Route::get('delete/{id}', [AddTaskController::class, 'destroy']);

@@ -11,173 +11,253 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <style>
-        .gradient-custom {
-            background: rgb(170, 229, 252);
-            linear-gradient(121.28deg, #669600 0%, #ff0000 100%),
-            linear-gradient(360deg, #0029ff 0%, #8fff00 100%),
-            radial-gradient(100% 164.72% at 100% 100%, #6100ff 0%, #00ff57 100%),
-            radial-gradient(100% 148.07% at 0% 0%, #fff500 0%, #51d500 100%);
-            background-blend-mode: screen, color-dodge, overlay, difference, normal;
-        }
-
-        h3 {
-            text-align: center;
-            padding-bottom: 18px;
-            font-family: sans-serif;
-
-        }
-
-        .a {
-            margin-top: -30px;
-        }
-
-        .del {
-            text-align: right;
-        }
-    </style>
-
-</head>
-
 <body>
-    <section class="vh-100 gradient-custom">
-        <div class="container py-5 h-100">
-            <div class="row d-flex justify-content-center align-items-center h-100">
-                <div class="col col-xl-10">
-
-                    @if (Session::get('success'))
-                        <div class="alert alert-success">
-                            {{ Session::get('success') }}
-                        </div>
-                    @endif
-
-                    @if (Session::get('fail'))
-                        <div class="alert alert-danger">
-                            {{ Session::get('fail') }}
-                        </div>
-                    @endif
-
-                    <div class="card">
-                        <div class="card-body p-5">
-                            <h3>Project To Do</h3>
-                            <form id="form" class="d-flex justify-content-center align-items-center mb-4">
-                                @csrf
-                                <div class="form-outline flex-fill">
-                                    <span class="text-danger">
-                                        @error('task')
-                                            {{ $message }}
-                                        @enderror
-                                    </span>
-                                    <input type="text" name="task" class="form-control" />
-                                    <label class="form-label">New task...</label>
-                                </div>&nbsp;&nbsp;&nbsp;
-                                <button type="submit" id="submit" class="a btn btn-info ms-2">Add</button>
-                            </form>
-
-                            <!-- Tabs navs -->
-                            <ul class="nav nav-tabs mb-4 pb-2">
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link active" id="ex1-tab-1" data-mdb-toggle="tab" href="#ex1-tabs-1"
-                                        role="tab" aria-controls="ex1-tabs-1" aria-selected="true">All Tasks</a>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-offset-3 col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Ajax ToDo List <a href="#" id="addNew" class="pull-right"
+                                data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i></a></h3>
+                    </div>
+                    <div class="panel-body" id="items">
+                        <ul class="list-group">
+                            @foreach ($items as $item)
+                                <li class="list-group-item ourItem" data-toggle="modal" data-target="#myModal"">
+                                    {{ $item->item }}
+                                    <input type="hidden" id="itemId" value="{{ $item->id }}">
                                 </li>
-                                {{-- <li class="nav-item" role="presentation">
-                                    <a class="nav-link" id="ex1-tab-2" data-mdb-toggle="tab" href="#ex1-tabs-2"
-                                        role="tab" aria-controls="ex1-tabs-2" aria-selected="false">Active</a>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-offset-3 col-lg-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Ajax List 2<a href="#" id="addNew2" class="pull-right"
+                                data-toggle="modal" data-target="#myModal2"><button class="btn btn-default btn-xs"><i
+                                        class="glyphicon glyphicon-plus glyphicon-lg"> Add</i></button></a></h3>
+                    </div>
+                    <div class="panel-body" id="items2">
+                        <ul class="list-group">
+                            @foreach ($items2 as $item)
+                                <li class="list-group-item ourItem2">{{ $item->item }}<a href="#"
+                                        class="pull-right editNew2" data-toggle="modal" data-target="#myModal2"><input
+                                            type="hidden" id="itemId2" value="{{ $item->id }}"><i
+                                            class="glyphicon glyphicon-edit fa-lg"></i></a>
                                 </li>
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" id="ex1-tab-3" data-mdb-toggle="tab" href="#ex1-tabs-3"
-                                        role="tab" aria-controls="ex1-tabs-3" aria-selected="false">Completed</a>
-                                </li> --}}
-                            </ul>
-                            <!-- Tabs navs -->
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-                            <!-- Tabs content -->
-                            <div class="tab-content" id="ex1-content">
-                                <div class="tab-pane fade show active" id="ex1-tabs-1" role="tabpanel"
-                                    aria-labelledby="ex1-tab-1">
-                                    {{-- <ul class="list-group mb-0">
-                                        @foreach ($result as $data)
-                                            <li class="list-group-item d-flex align-items-center border-0 mb-2 rounded"
-                                                style="background-color: #f4f6f7;">
-                                                <input class="form-check-input me-2" type="checkbox" value=""
-                                                    aria-label="..." checked />
-                                                <s>{{ $data->task }}</s>
-                                               <div class="del">
-                                                <a href="#">
-                                                    <span class="glyphicon glyphicon-trash">delete</span>
-                                                </a></div>
-                                            </li>
-                                        @endforeach
-
-                                    </ul> --}}
-
-                                    <table class="table">
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th scope="col">Tasks</th>
-                                                <th scope="col">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-
-
-                                            {{-- @foreach ($data as $data)
-                                            <tr>
-                                                <td class="list-group-item d-flex align-items-center border-0 mb-2 rounded"
-                                                    style="background-color: #f4f6f7;">{{ $data->task }}
-                                                    <div class="del">
-                                                        <a onclick="return confirm(' Are You Sure to Delete this')"
-                                                            href="delete/{{ $data->id }}">Delete</a>
-                                                </td>
-                                            </tr>
-                                        @endforeach --}}
-                                        </tbody>
-                                    </table>
-
-                                </div>
-                                <div class="tab-pane fade" id="ex1-tabs-2" role="tabpanel" aria-labelledby="ex1-tab-2">
-                                    <ul class="list-group mb-0">
-                                        <li class="list-group-item d-flex align-items-center border-0 mb-2 rounded"
-                                            style="background-color: #f4f6f7;">
-                                            <input class="form-check-input me-2" type="checkbox" value=""
-                                                aria-label="..." />
-                                            Morbi leo risus
-                                        </li>
-
-                                    </ul>
-                                </div>
-                                <div class="tab-pane fade" id="ex1-tabs-3" role="tabpanel" aria-labelledby="ex1-tab-3">
-                                    <ul class="list-group mb-0">
-                                        <li class="list-group-item d-flex align-items-center border-0 mb-2 rounded"
-                                            style="background-color: #f4f6f7;">
-                                            <input class="form-check-input me-2" type="checkbox" value=""
-                                                aria-label="..." checked />
-                                            <s>Cras justo odio</s>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- Tabs content -->
-
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="title">Add New Item</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="id">
+                            <p><input type="text" placeholder="Write Item Here" id="addItem" class="form-control">
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" id="delete" data-dismiss="modal"
+                                style="display: none">Delete</button>
+                            <button type="button" class="btn btn-primary" id="saveChanges"
+                                data-dismiss="modal"style="display: none">Save changes</button>
+                            <button type="button" class="btn btn-primary" id="addButton" data-dismiss="modal">Add
+                                Item</button>
                         </div>
                     </div>
+                </div>
+            </div>
 
+
+            <!-- Modal2 -->
+            <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="title2">Add New Item 2</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" id="id2">
+                            <p><input type="text" placeholder="Write Item Here 2" id="addItem2"
+                                    class="form-control"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-warning" id="delete2" data-dismiss="modal"
+                                style="display: none">Delete</button>
+                            <button type="button" class="btn btn-primary" id="saveChanges2"
+                                data-dismiss="modal"style="display: none">Save changes</button>
+                            <button type="button" class="btn btn-primary" id="addButton2" data-dismiss="modal">Add
+                                Item</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+    {{ csrf_field() }}
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
+    </script>
+    <script>
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name=_token]').attr('content')
+                //'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
 
+        $(document).ready(function() {
+            $(document).on('click', '.ourItem', function(event) {
+                var text = $(this).text();
+                var id = $(this).find('#itemId').val();
+                $('#title').text('Edit Item');
+                var text = $.trim(text);
+                $('#addItem').val(text);
+                $('#delete').show('400');
+                $('#saveChanges').show('400');
+                $('#addButton').hide('400');
+                $('#id').val(id);
+                console.log(text);
+            });
 
+            $(document).on('click', '#addNew', function(event) {
+                $('#title').text('Add New Item');
+                $('#addItem').val("");
+                $('#delete').hide('400');
+                $('#saveChanges').hide('400');
+                $('#addButton').show('400');
+            });
 
+            $('#addButton').click(function(event) {
+                var text = $('#addItem').val();
+                if (text == "") {
+                    alert('Please type anything for item');
+                } else {
+                    $.post("list", {
+                        'text': text,
+                        '_token': $('input[name="_token"]').val()
+                    }, function(data) { // data - we are getting from the Controller
+                        console.log(data);
+                        $('#items').load(location.href + ' #items'); //refresh the page
+                    });
+                }
+            });
 
+            $('#delete').click(function(event) {
+                var id = $("#id").val();
+                $.post('delete', {
+                    'id': id,
+                    '_token': $('input[name="_token"]').val()
+                }, function(data) {
+                    $('#items').load(location.href + ' #items'); //refresh the page
+                    //console.log(id);
+                    console.log(data);
+                });
+            });
 
+            $('#saveChanges').click(function(event) {
+                var id = $("#id").val();
+                var value = $("#addItem").val();
+                if (value == "") {
+                    alert('Please type anything for item');
+                } else {
+                    $.post('update', {
+                        'id': id,
+                        'value': value,
+                        '_token': $('input[name="_token"]').val()
+                    }, function(data) {
+                        $('#items').load(location.href + ' #items'); //refresh the page
+                        //console.log(id);
+                        console.log(data);
+                    });
+                }
+            });
+        });
 
+        $(document).ready(function() {
+            $(document).on('click', '.ourItem2', function(event) {
+                var text2 = $(this).text();
+                var id2 = $(this).find('#itemId2').val();
+                $('#title2').text('Edit Item 2');
+                var text2 = $.trim(text2);
+                $('#addItem2').val(text2);
+                $('#delete2').show('400');
+                $('#saveChanges2').show('400');
+                $('#addButton2').hide('400');
+                $('#id2').val(id2);
+                console.log(text2);
+            });
 
+            $(document).on('click', '#addNew2', function(event) {
+                $('#title2').text('Add New Item 2');
+                $('#addItem2').val("");
+                $('#delete2').hide('400');
+                $('#saveChanges2').hide('400');
+                $('#addButton2').show('400');
+            });
 
+            $('#addButton2').click(function(event) {
+                var text2 = $('#addItem2').val();
+                if (text2 == "") {
+                    alert('Please type anything for item');
+                } else {
+                    $.post("list2", {
+                        'text2': text2,
+                        '_token': $('input[name="_token"]').val()
+                    }, function(data2) { // data - we are getting from the Controller
+                        console.log(data2);
+                        $('#items2').load(location.href + ' #items2'); //refresh the page
+                    });
+                }
+            });
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+            $('#delete2').click(function(event) {
+                var id2 = $("#id2").val();
+                $.post('delete2', {
+                    'id': id2,
+                    '_token': $('input[name="_token"]').val()
+                }, function(data) {
+                    $('#items2').load(location.href + ' #items2'); //refresh the page
+                    //console.log(id);
+                    console.log(data);
+                });
+            });
+
+            $('#saveChanges2').click(function(event) {
+                var id2 = $("#id2").val();
+                var value2 = $("#addItem2").val();
+                if (value2 == "") {
+                    alert('Please type anything for item');
+                } else {
+                    $.post('update2', {
+                        'id': id2,
+                        'value2': value2,
+                        '_token': $('input[name="_token"]').val()
+                    }, function(data) {
+                        $('#items2').load(location.href + ' #items2'); //refresh the page
+                        //console.log(id);
+                        console.log(data);
+                    });
+                }
+            });
+        });
+    </script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
@@ -189,44 +269,6 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
     </script>
-    <script>
-        jQuery('#form').submit(function(e) {
-            e.preventDefault();
-            jQuery.ajax({
-                url: "{{ url('add_task') }}",
-                data: jQuery('#form').serialize(),
-                type: 'post',
-                success: function(result) {
-                    jQuery('#message').html(result.msg);
-                    jQuery('#form')['0'].reset();
-                }
-            });
-        });
-
-        $(document).ready(function() {
-
-            fetch_tasks();
-
-            function fetch_tasks() {
-                $.ajax({
-                    type: "GET",
-                    url: "fetch",
-                    dataType: "json",
-                    success: function(response) {
-                        $.each(response.task, function(key, item) {
-                            $('tbody').append('<tr>\
-                                    <td>'+item.task+'</td>\
-                                            </tr>');
-                        });
-                    }
-                });
-            }
-
-
-
-        })
-    </script>
-
 </body>
 
 </html>

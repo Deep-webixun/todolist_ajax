@@ -7,54 +7,36 @@ use Illuminate\Http\Request;
 
 class AddTaskController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $data = AddTask::all();
-        return view('task', compact('data'));
+        $items = AddTask::all();
+        //return $items;
+        return view('list', compact('items'));
     }
 
-    public function fetch_tasks()
+    public function create(Request $request)
     {
-        $task = AddTask::all();
-        return response()->json([
-            'task' => $task,
+        $item = new AddTask();
+        $item->item = $request->text; // ->item from DB
+        $item->save();
+        return 'Done';
+    }
+
+    public function delete(Request $request)
+    {
+        AddTask::where('id', $request->id)->delete();
+        return $request->all();
+    }
+
+    public function update(Request $request)
+    {
+        $this->validate($request, [
+            // rules
+            'value' => 'required|min:3|max:255',
         ]);
-    }
-    // public function addtask(Request $request)
-    // {
-    //     $request->validate([
-    //         'task' => 'required|unique:add_tasks',
-    //     ]);
-
-    //     $res = new AddTask();
-    //     $res->task = $request->input('task');
-    //     $res->save();
-    //     return redirect()
-    //         ->back()
-    //         ->with('success', 'New Task Added Successfully');
-    // }
-
-    public function addtask(Request $request)
-    {
-        $request->validate([
-            'task' => 'required|unique:add_tasks',
-        ]);
-        $model = new AddTask();
-        $model->task = $request->post('task');
-        $model->save();
-        return ['msg' => 'Data Inserted'];
-    }
-
-    public function destroy(AddTask $AddTask, $id)
-    {
-        AddTask::destroy(['id', $id]);
-        return redirect()
-            ->back()
-            ->with('fail', 'Task Deleted Successfully');
+        $item = AddTask::find($request->id);
+        $item->item = $request->value;
+        $item->save();
+        return $request->all();
     }
 }
