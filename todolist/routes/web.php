@@ -14,8 +14,11 @@ use App\Http\Controllers\TodoController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('', [TodoController::class, 'index']);
 
-Route::post('addtask', [TodoController::class, 'store']);
+Route::post('list', [TodoController::class, 'create']);
+
+Route::post('delete', [TodoController::class, 'delete']);
+
+Route::post('tick', [TodoController::class, 'tick']);
+

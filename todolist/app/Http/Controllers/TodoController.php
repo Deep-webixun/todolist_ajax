@@ -14,7 +14,8 @@ class TodoController extends Controller
      */
     public function index()
     {
-        //
+        $todos = Todo::all();
+        return view('todo', compact('todos'));
     }
 
     /**
@@ -22,9 +23,13 @@ class TodoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $todo = new Todo();
+        $todo->task_name = $request->text;
+        $todo->save();
+        return 'Done';
+        // return $request->all();
     }
 
     /**
@@ -33,14 +38,20 @@ class TodoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function delete(Request $request)
     {
-        $data = new Todo();
-        $data->task = $request->input('task');
-        $data->save();
-        console . log('data inserted successfully');
+        Todo::where('id', $request->id)->delete();
+        return $request->all();
     }
 
+    // public function tick(Request $request)
+    // {
+    //     $todo = new Todo();
+    //     $todo->status = $request->text;
+    //     $todo->save();
+    //     return 'Done';
+    //     // return $request->all();
+    // }
     /**
      * Display the specified resource.
      *
